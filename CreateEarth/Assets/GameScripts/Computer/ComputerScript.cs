@@ -5,15 +5,18 @@ using UnityEngine.SceneManagement;
 
 public class ComputerScript : MonoBehaviour
 {
-    private GameObject commandWindow;
+    public GameObject commandWindow;
+    public GameObject statusWindow;
     private bool commandWopen;
 
     // Start is called before the first frame update
     void Start()
     {
         commandWindow = GameObject.Find("CommandWindow");
+        statusWindow = GameObject.Find("EarthStatusWindow");
 
         commandWindow.SetActive(false);
+        statusWindow.SetActive(false);
         commandWopen = false;
     }
 
@@ -44,5 +47,10 @@ public class ComputerScript : MonoBehaviour
             commandWindow.SetActive(false);
             commandWopen = false;
         }
+    }
+
+    public void CloseWindow()
+    {
+        this.gameObject.SetActive(false);
     }
 }
