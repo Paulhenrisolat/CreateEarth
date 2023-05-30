@@ -18,37 +18,42 @@ public class SpaceshipManager : MonoBehaviour
     void Update()
     {
         EarthManager();
-        CreateEarth();
-    }
-
-    private void CreateEarth()
-    {
-        if (ComputerToSpaceShip.canCreateEarth)
-        {
-            print("earth is here");
-
-            earthtest.SetActive(true);
-            dissolveScript.dissolveAmount = 1;
-            dissolveScript.isDissolving = true;
-
-            ComputerToSpaceShip.canCreateEarth = false;
-        }
     }
 
     private void EarthManager()
     {
-        if (!ComputerToSpaceShip.earthIsCreated && !ComputerToSpaceShip.earthIsDestroyed)
+        //V2
+        //Start earth not created
+        if (!ComputerToSpaceShip.canCreateEarth && !ComputerToSpaceShip.earthAlreadyCreated)
         {
-            dissolveScript.dissolveAmount = 1;
             earthtest.SetActive(false);
         }
-        if (dissolveScript.dissolveAmount <= 0 && ComputerToSpaceShip.earthIsCreated)
+        //earth is creating
+        if(ComputerToSpaceShip.canCreateEarth && !ComputerToSpaceShip.earthAlreadyCreated)
         {
-            dissolveScript.dissolveAmount = 0;
+            earthtest.SetActive(true);
+            dissolveScript.dissolveAmount = 1;
+            dissolveScript.isDissolving = true;
+            ComputerToSpaceShip.earthAlreadyCreated = true;
         }
-        if (ComputerToSpaceShip.earthIsDestroyed)
+        //earth is created
+        if (ComputerToSpaceShip.earthAlreadyCreated && !ComputerToSpaceShip.earthIsDestroyed)
         {
+            earthtest.SetActive(true);
+            dissolveScript.isDissolving = true;
+        }
+        //earth is destroying
+        if (ComputerToSpaceShip.earthAlreadyCreated && ComputerToSpaceShip.earthIsDestroyed)
+        {
+            ComputerToSpaceShip.canCreateEarth = false;
+            earthtest.SetActive(true);
+            //dissolveScript.dissolveAmount = 0;
             dissolveScript.isDissolving = false;
+
+            if(dissolveScript.dissolveAmount >= 1)
+            {
+                ComputerToSpaceShip.earthAlreadyCreated = false;
+            }
         }
         
     }

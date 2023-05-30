@@ -20,6 +20,7 @@ public class CommandWindowScript : MonoBehaviour
     private string commandInput;
     private bool commandRuning;
     private bool commandExist;
+    private bool createCommandOn;
 
     private bool statsusWindowIsOpen;
     private GameObject earthHoloC;
@@ -157,7 +158,7 @@ public class CommandWindowScript : MonoBehaviour
         //create earth
         if (commandInput == "/earth create" && !commandRuning)
         {
-            if (ComputerToSpaceShip.earthIsCreated)
+            if (ComputerToSpaceShip.earthAlreadyCreated && !createCommandOn)
             {
                 //new text
                 newCommand = Instantiate(commandLineErrorPrefab, commandOutpoutPos);
@@ -166,7 +167,7 @@ public class CommandWindowScript : MonoBehaviour
                 bottomPadding = bottomPadding + 10;
                 commandOutpout.GetComponent<VerticalLayoutGroup>().padding.bottom = bottomPadding;
             }
-            if (!ComputerToSpaceShip.earthIsCreated)
+            if (!ComputerToSpaceShip.earthAlreadyCreated)
             {
                 //new text
                 newCommand = Instantiate(commandLinePrefab, commandOutpoutPos);
@@ -176,8 +177,8 @@ public class CommandWindowScript : MonoBehaviour
                 commandOutpout.GetComponent<VerticalLayoutGroup>().padding.bottom = bottomPadding;
 
                 //action
+                ComputerToSpaceShip.earthIsDestroyed = false;
                 ComputerToSpaceShip.canCreateEarth = true;
-                ComputerToSpaceShip.earthIsCreated = true;
             }
 
             //clear ipnut
