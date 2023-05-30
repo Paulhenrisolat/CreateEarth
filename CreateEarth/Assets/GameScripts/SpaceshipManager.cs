@@ -22,7 +22,6 @@ public class SpaceshipManager : MonoBehaviour
 
     private void EarthManager()
     {
-        //V2
         //Start earth not created
         if (!ComputerToSpaceShip.canCreateEarth && !ComputerToSpaceShip.earthAlreadyCreated)
         {
@@ -55,6 +54,5 @@ public class SpaceshipManager : MonoBehaviour
                 ComputerToSpaceShip.earthAlreadyCreated = false;
             }
         }
-        
     }
 }

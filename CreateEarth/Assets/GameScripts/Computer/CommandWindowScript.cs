@@ -20,7 +20,6 @@ public class CommandWindowScript : MonoBehaviour
     private string commandInput;
     private bool commandRuning;
     private bool commandExist;
-    private bool createCommandOn;
 
     private bool statsusWindowIsOpen;
     private GameObject earthHoloC;
@@ -158,7 +157,7 @@ public class CommandWindowScript : MonoBehaviour
         //create earth
         if (commandInput == "/earth create" && !commandRuning)
         {
-            if (ComputerToSpaceShip.earthAlreadyCreated && !createCommandOn)
+            if (ComputerToSpaceShip.earthAlreadyCreated && ComputerToSpaceShip.canCreateEarth)
             {
                 //new text
                 newCommand = Instantiate(commandLineErrorPrefab, commandOutpoutPos);
