@@ -21,25 +21,39 @@ public class CommandWindowScript : MonoBehaviour
     private bool commandRuning;
     private bool commandExist;
 
+    //status earth
     private bool statsusWindowIsOpen;
     private GameObject earthHoloC;
     private GameObject earthHoloNC;
-    private GameObject earthNotFound;
+    private TextMeshProUGUI earthTemp;
+    private TextMeshProUGUI earthRotSpeed;
+    private TextMeshProUGUI earthMass;
+    private TextMeshProUGUI earthOxygen;
+    public TextMeshProUGUI earthName;
+    public GameObject earthNotFound;
+
+    //status spaceship
+    private bool spaceshipstatsusWindowIsOpen;
+    private TextMeshProUGUI spaceshipLife;
+    private TextMeshProUGUI spaceshipDroneNumber;
+    private TextMeshProUGUI spaceshipName;
+    private TextMeshProUGUI spaceshiphOxygenExist;
 
     // Start is called before the first frame update
     void Start()
     {
         computerScript = GameObject.Find("ComputerManager").GetComponent<ComputerScript>();
-        commandInputField = GameObject.Find("InputCommandField").GetComponent<TMP_InputField>();
-        commandOutpout = GameObject.Find("CommandOutpout");
+        
+
         earthHoloC = GameObject.Find("EarthHoloC");
         earthHoloNC = GameObject.Find("EarthHoloNC");
-        earthNotFound = GameObject.Find("EarthNotFound");
+        earthName = GameObject.Find("EarthName").GetComponent<TextMeshProUGUI>();
+        earthName.text = "test";
 
         statsusWindowIsOpen = false;
+        spaceshipstatsusWindowIsOpen = false;
         bottomPadding = 0;
-        commandOutpout.GetComponent<VerticalLayoutGroup>().padding.bottom = bottomPadding;
-        commandOutpoutPos = commandOutpout.transform;
+        
 
         commandRuning = false;
     }
@@ -47,8 +61,33 @@ public class CommandWindowScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        WindowsOpen();
         CommandAction();
         UpdateEarthStatusWindow();
+        //TESTComputerToSpaceShip.earthTemperature = ComputerToSpaceShip.earthTemperature + 0.1f;
+    }
+
+    private void WindowsOpen()
+    {
+        if (computerScript.commandWopen)
+        {
+            commandInputField = GameObject.Find("InputCommandField").GetComponent<TMP_InputField>();
+            commandOutpout = GameObject.Find("CommandOutpout");
+            commandOutpout.GetComponent<VerticalLayoutGroup>().padding.bottom = bottomPadding;
+            commandOutpoutPos = commandOutpout.transform;
+        }
+        if (statsusWindowIsOpen)
+        {
+            earthTemp = GameObject.Find("TemperatureSTAT").GetComponent<TextMeshProUGUI>();
+            earthTemp.text = "Temp : " + ComputerToSpaceShip.earthTemperature + "°C";
+            earthRotSpeed = GameObject.Find("RotationSpeedSTAT").GetComponent<TextMeshProUGUI>();
+            earthRotSpeed.text = "Rotation Speed : " + ComputerToSpaceShip.earthRotationSpeed + "KM/h";
+            earthMass = GameObject.Find("MassSTAT").GetComponent<TextMeshProUGUI>();
+            earthMass.text = "Mass : " + ComputerToSpaceShip.earthMass + "Kg";
+            earthOxygen = GameObject.Find("OxygenSTAT").GetComponent<TextMeshProUGUI>();
+            earthOxygen.text = "Oxygen : " + ComputerToSpaceShip.earthOxygenExist;
+
+        }
     }
 
     //Trigger when player hit 'Enter/Return' and commandInput not null or wihtespaces in the commandInput window
@@ -136,8 +175,9 @@ public class CommandWindowScript : MonoBehaviour
             commandOutpout.GetComponent<VerticalLayoutGroup>().padding.bottom = bottomPadding;
 
             //action
-            computerScript.statusWindow.SetActive(true);
             statsusWindowIsOpen = true;
+            computerScript.statusWindow.SetActive(true);
+            
 
             //clear ipnut
             commandInput = null;
@@ -147,8 +187,50 @@ public class CommandWindowScript : MonoBehaviour
         if (commandInput == "/earth close status" && !commandRuning)
         {
             //action
-            computerScript.statusWindow.SetActive(false);
             statsusWindowIsOpen = false;
+            computerScript.statusWindow.SetActive(false);
+            
+
+            //clear ipnut
+            commandInput = null;
+        }
+
+        //open spaceShip status window
+        if (commandInput == "/spaceship open status" && !commandRuning)
+        {
+            if (spaceshipstatsusWindowIsOpen)
+            {
+                //new text
+                newCommand = Instantiate(commandLineErrorPrefab, commandOutpoutPos);
+                newCommand.GetComponent<TextMeshProUGUI>().text = "[!]Window Already Open !";
+
+                bottomPadding = bottomPadding + 10;
+                commandOutpout.GetComponent<VerticalLayoutGroup>().padding.bottom = bottomPadding;
+            }
+            else
+            {
+                //new text
+                newCommand = Instantiate(commandLinePrefab, commandOutpoutPos);
+                newCommand.GetComponent<TextMeshProUGUI>().text = "Opening [Spaceship] actual status";
+
+                bottomPadding = bottomPadding + 10;
+                commandOutpout.GetComponent<VerticalLayoutGroup>().padding.bottom = bottomPadding;
+
+                //action
+                computerScript.spaceshipStatusWindow.SetActive(true);
+                spaceshipstatsusWindowIsOpen = true;
+
+                //clear ipnut
+                commandInput = null;
+            }
+        }
+
+        //close spaceShip status window
+        if (commandInput == "/spaceship close status" && !commandRuning)
+        {
+            //action
+            computerScript.spaceshipStatusWindow.SetActive(false);
+            spaceshipstatsusWindowIsOpen = false;
 
             //clear ipnut
             commandInput = null;
@@ -206,17 +288,17 @@ public class CommandWindowScript : MonoBehaviour
     {
         if (statsusWindowIsOpen)
         {
-            if (ComputerToSpaceShip.earthIsCreated)
+            if (ComputerToSpaceShip.earthAlreadyCreated)
             {
                 earthHoloC.SetActive(true);
                 earthHoloNC.SetActive(false);
-                //earthNotFound.SetActive(false);
+                earthNotFound.SetActive(false);
             }
-            if (!ComputerToSpaceShip.earthIsCreated)
+            if (!ComputerToSpaceShip.earthAlreadyCreated)
             {
                 earthHoloC.SetActive(false);
                 earthHoloNC.SetActive(true);
-                //earthNotFound.SetActive(true);
+                earthNotFound.SetActive(true);
             }
         }
     }

@@ -7,16 +7,21 @@ public class ComputerScript : MonoBehaviour
 {
     public GameObject commandWindow;
     public GameObject statusWindow;
-    private bool commandWopen;
+    public GameObject spaceshipStatusWindow;
+
+    public bool commandWopen;
 
     // Start is called before the first frame update
     void Start()
     {
         commandWindow = GameObject.Find("CommandWindow");
         statusWindow = GameObject.Find("EarthStatusWindow");
+        spaceshipStatusWindow = GameObject.Find("SpaceShipStatusWindow");
 
         commandWindow.SetActive(false);
         statusWindow.SetActive(false);
+        spaceshipStatusWindow.SetActive(false);
+
         commandWopen = false;
     }
 
