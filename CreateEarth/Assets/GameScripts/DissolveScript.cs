@@ -8,6 +8,7 @@ public class DissolveScript : MonoBehaviour
     public float dissolveAmount;
     public float dissolveSpeed;
     public bool isDissolving;
+    public bool isDissolved;
 
     [ColorUsageAttribute(true, true)]
     public Color outColor;
@@ -26,6 +27,7 @@ public class DissolveScript : MonoBehaviour
     void Update()
     {
         DissolveManager();
+        IsDissolved();
     }
 
     public void DissolveManager()
@@ -56,6 +58,14 @@ public class DissolveScript : MonoBehaviour
         if (dissolveAmount < 1)
         {
             dissolveAmount += Time.deltaTime * speed;
+        }
+    }
+
+    private void IsDissolved()
+    {
+        if (dissolveAmount < 0)
+        {
+            isDissolved = true;
         }
     }
 }

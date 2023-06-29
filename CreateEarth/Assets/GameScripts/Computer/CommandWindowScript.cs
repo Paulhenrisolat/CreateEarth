@@ -21,7 +21,11 @@ public class CommandWindowScript : MonoBehaviour
     private bool commandRuning;
     private bool commandExist;
 
-    //status earth
+    //earth manager
+    public GameObject earthManager;
+    public List<EarthLayer> earthLayers;
+
+    //status earth window
     private bool statsusWindowIsOpen;
     private GameObject earthHoloC;
     private GameObject earthHoloNC;
@@ -32,19 +36,26 @@ public class CommandWindowScript : MonoBehaviour
     public TextMeshProUGUI earthName;
     public GameObject earthNotFound;
 
-    //status spaceship
+    //status spaceship window
     private bool spaceshipstatsusWindowIsOpen;
+    private TextMeshProUGUI spaceshipState;
     private TextMeshProUGUI spaceshipLife;
+    private TextMeshProUGUI spaceshipEnergie;
+    private TextMeshProUGUI spaceshiphOxygenExist;
     private TextMeshProUGUI spaceshipDroneNumber;
     private TextMeshProUGUI spaceshipName;
-    private TextMeshProUGUI spaceshiphOxygenExist;
+
+    //scan window
+    private bool scanWindowIsOpen;
 
     // Start is called before the first frame update
     void Start()
     {
-        computerScript = GameObject.Find("ComputerManager").GetComponent<ComputerScript>();
-        
+        //earthManager
+        earthManager = GameObject.Find("EarthManager");
+        earthLayers = earthManager.GetComponent<EarthManager>().earthLayers;
 
+        computerScript = GameObject.Find("ComputerManager").GetComponent<ComputerScript>();
         earthHoloC = GameObject.Find("EarthHoloC");
         earthHoloNC = GameObject.Find("EarthHoloNC");
         earthName = GameObject.Find("EarthName").GetComponent<TextMeshProUGUI>();
@@ -52,8 +63,9 @@ public class CommandWindowScript : MonoBehaviour
 
         statsusWindowIsOpen = false;
         spaceshipstatsusWindowIsOpen = false;
+        scanWindowIsOpen = false;
+
         bottomPadding = 0;
-        
 
         commandRuning = false;
     }
@@ -86,7 +98,21 @@ public class CommandWindowScript : MonoBehaviour
             earthMass.text = "Mass : " + ComputerToSpaceShip.earthMass + "Kg";
             earthOxygen = GameObject.Find("OxygenSTAT").GetComponent<TextMeshProUGUI>();
             earthOxygen.text = "Oxygen : " + ComputerToSpaceShip.earthOxygenExist;
-
+        }
+        if (spaceshipstatsusWindowIsOpen)
+        {
+            spaceshipName = GameObject.Find("SpaceshipNameSTAT").GetComponent<TextMeshProUGUI>();
+            spaceshipName.text = "Name : " + ComputerToSpaceShip.spaceshipName;
+            spaceshipState = GameObject.Find("SpaceshipStateSTAT").GetComponent<TextMeshProUGUI>();
+            spaceshipState.text = "State : " + ComputerToSpaceShip.spaceshipState;
+            spaceshipLife = GameObject.Find("SpaceshipLifeSTAT").GetComponent<TextMeshProUGUI>();
+            spaceshipLife.text = "Life : " + ComputerToSpaceShip.spaceshipLife + " / " + ComputerToSpaceShip.spaceshipMaxLife + " Hp";
+            spaceshipEnergie = GameObject.Find("SpaceshipEnergySTAT").GetComponent<TextMeshProUGUI>();
+            spaceshipEnergie.text = "Energie : " + ComputerToSpaceShip.spaceshipEnergie + " / " + ComputerToSpaceShip.spaceshipMaxEnergie + " J";
+            spaceshiphOxygenExist = GameObject.Find("SpaceshipOxygenSTAT").GetComponent<TextMeshProUGUI>();
+            spaceshiphOxygenExist.text = "Oxygen : " + ComputerToSpaceShip.spaceshiphOxygenExist;
+            spaceshipDroneNumber = GameObject.Find("SpaceshipDronesSTAT").GetComponent<TextMeshProUGUI>();
+            spaceshipDroneNumber.text = "Drones : " + ComputerToSpaceShip.spaceshipDroneNumber;
         }
     }
 
@@ -115,6 +141,22 @@ public class CommandWindowScript : MonoBehaviour
     //Actions trigger by specific commands
     private void CommandAction()
     {
+        //test stat
+        if (commandInput == "/spaceship heal" && !commandRuning)
+        {
+            //new text
+            newCommand = Instantiate(commandLinePrefab, commandOutpoutPos);
+            newCommand.GetComponent<TextMeshProUGUI>().text = "Healing spaceship...";
+
+            bottomPadding = bottomPadding + 10;
+            commandOutpout.GetComponent<VerticalLayoutGroup>().padding.bottom = bottomPadding;
+
+            //action
+            ComputerToSpaceShip.spaceshipLife = ComputerToSpaceShip.spaceshipLife + 10;
+
+            //clear ipnut
+            commandInput = null;
+        }
         //close command window
         if (commandInput == "/close" && !commandRuning)
         {
@@ -237,7 +279,7 @@ public class CommandWindowScript : MonoBehaviour
         }
 
         //create earth
-        if (commandInput == "/earth create" && !commandRuning)
+        if (commandInput == "/earth create core" && !commandRuning)
         {
             if (ComputerToSpaceShip.earthAlreadyCreated && ComputerToSpaceShip.canCreateEarth)
             {
@@ -252,22 +294,68 @@ public class CommandWindowScript : MonoBehaviour
             {
                 //new text
                 newCommand = Instantiate(commandLinePrefab, commandOutpoutPos);
-                newCommand.GetComponent<TextMeshProUGUI>().text = "Building [Earth]...";
+                newCommand.GetComponent<TextMeshProUGUI>().text = "Building [CORE]...";
 
                 bottomPadding = bottomPadding + 10;
                 commandOutpout.GetComponent<VerticalLayoutGroup>().padding.bottom = bottomPadding;
 
                 //action
-                ComputerToSpaceShip.earthIsDestroyed = false;
-                ComputerToSpaceShip.canCreateEarth = true;
-            }
+                ComputerToSpaceShip.coreIsDestroying = false;
+                ComputerToSpaceShip.coreIsCreating = true;
 
+                foreach(EarthLayer earthLayer in earthLayers)
+                {
+                    if(earthLayer.name == "core")
+                    {
+                        Debug.Log("HEY");
+                        earthLayer.isCreating = true;
+                    }
+                }
+            }
+            //clear ipnut
+            commandInput = null;
+        }
+
+        //create lava
+        if (commandInput == "/earth create lava" && !commandRuning)
+        {
+            if (ComputerToSpaceShip.earthAlreadyCreated && ComputerToSpaceShip.canCreateEarth)
+            {
+                //new text
+                newCommand = Instantiate(commandLineErrorPrefab, commandOutpoutPos);
+                newCommand.GetComponent<TextMeshProUGUI>().text = "[!]Warning [Earth] Already created !";
+
+                bottomPadding = bottomPadding + 10;
+                commandOutpout.GetComponent<VerticalLayoutGroup>().padding.bottom = bottomPadding;
+            }
+            if (!ComputerToSpaceShip.earthAlreadyCreated)
+            {
+                //new text
+                newCommand = Instantiate(commandLinePrefab, commandOutpoutPos);
+                newCommand.GetComponent<TextMeshProUGUI>().text = "Building [LAVA]...";
+
+                bottomPadding = bottomPadding + 10;
+                commandOutpout.GetComponent<VerticalLayoutGroup>().padding.bottom = bottomPadding;
+
+                //action
+                ComputerToSpaceShip.coreIsDestroying = false;
+                ComputerToSpaceShip.coreIsCreating = true;
+
+                foreach (EarthLayer earthLayer in earthLayers)
+                {
+                    if (earthLayer.name == "lava")
+                    {
+                        Debug.Log("HEY2");
+                        earthLayer.isCreating = true;
+                    }
+                }
+            }
             //clear ipnut
             commandInput = null;
         }
 
         //destroy earth
-        if (commandInput == "/earth destroy" && !commandRuning)
+        if (commandInput == "/earth destroy core" && !commandRuning)
         {
             //new text
             newCommand = Instantiate(commandLinePrefab, commandOutpoutPos);
@@ -278,6 +366,53 @@ public class CommandWindowScript : MonoBehaviour
 
             //action
             ComputerToSpaceShip.earthIsDestroyed = true;
+
+            //clear ipnut
+            commandInput = null;
+        }
+
+        //window for scanning anny main gameplayObject : spaceship, earth, drones..(need to be open first)
+        if (commandInput == "/scan open" && !commandRuning)
+        {
+            if (commandInput == "/scan open" && scanWindowIsOpen && !commandRuning)
+            {
+                //new text
+                newCommand = Instantiate(commandLineErrorPrefab, commandOutpoutPos);
+                newCommand.GetComponent<TextMeshProUGUI>().text = "[Scan] Window Already Open";
+
+                bottomPadding = bottomPadding + 10;
+                commandOutpout.GetComponent<VerticalLayoutGroup>().padding.bottom = bottomPadding;
+
+                //clear ipnut
+                commandInput = null;
+            }
+            else
+            {
+                //new text
+                newCommand = Instantiate(commandLinePrefab, commandOutpoutPos);
+                newCommand.GetComponent<TextMeshProUGUI>().text = "Opening [Scan] window...";
+
+                bottomPadding = bottomPadding + 10;
+                commandOutpout.GetComponent<VerticalLayoutGroup>().padding.bottom = bottomPadding;
+
+                //action
+                scanWindowIsOpen = true;
+
+                //clear ipnut
+                commandInput = null;
+            } 
+        }
+        if (commandInput == "/scan close" && !commandRuning)
+        {
+            //new text
+            newCommand = Instantiate(commandLinePrefab, commandOutpoutPos);
+            newCommand.GetComponent<TextMeshProUGUI>().text = "Closing [Scan] window...";
+
+            bottomPadding = bottomPadding + 10;
+            commandOutpout.GetComponent<VerticalLayoutGroup>().padding.bottom = bottomPadding;
+
+            //action
+            scanWindowIsOpen = false;
 
             //clear ipnut
             commandInput = null;

@@ -9,8 +9,13 @@ public class InteractScript : MonoBehaviour
 
     private bool canInteract;
 
-    enum ObjectType {Computer, note, log}
+    enum ObjectType {Computer, note, log, door}
     [SerializeField] ObjectType objectType;
+
+    
+    enum SceneChoice { SampleScene, ComputerRoom, ChamberCorridor, PowerRoom, LocalRoom, RightWing, LeftWing, SpaceshipInterior, SpaceshipExterior}
+    [Header("Change scene if Door")]
+    [SerializeField] SceneChoice sceneChoice;
 
     // Start is called before the first frame update
     void Start()
@@ -61,6 +66,10 @@ public class InteractScript : MonoBehaviour
             if (objectSelected == ObjectType.log)
             {
 
+            }
+            if (objectSelected == ObjectType.door)
+            {
+                SceneManager.LoadScene(sceneChoice.ToString());
             }
         }
     }
