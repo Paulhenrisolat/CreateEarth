@@ -8,6 +8,7 @@ public class ComputerScript : MonoBehaviour
     public GameObject commandWindow;
     public GameObject statusWindow;
     public GameObject spaceshipStatusWindow;
+    public GameObject scanWindow;
 
     public bool commandWopen;
 
@@ -17,10 +18,12 @@ public class ComputerScript : MonoBehaviour
         commandWindow = GameObject.Find("CommandWindow");
         statusWindow = GameObject.Find("EarthStatusWindow");
         spaceshipStatusWindow = GameObject.Find("SpaceShipStatusWindow");
+        scanWindow = GameObject.Find("ScannerWindow");
 
         commandWindow.SetActive(false);
         statusWindow.SetActive(false);
         spaceshipStatusWindow.SetActive(false);
+        scanWindow.SetActive(false);
 
         commandWopen = false;
     }

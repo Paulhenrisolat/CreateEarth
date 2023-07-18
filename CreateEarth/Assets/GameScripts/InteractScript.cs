@@ -12,22 +12,57 @@ public class InteractScript : MonoBehaviour
     enum ObjectType {Computer, note, log, door}
     [SerializeField] ObjectType objectType;
 
-    
-    enum SceneChoice { SampleScene, ComputerRoom, ChamberCorridor, PowerRoom, LocalRoom, RightWing, LeftWing, SpaceshipInterior, SpaceshipExterior}
-    [Header("Change scene if Door")]
+    enum SceneChoice { SampleScene, ComputerRoom, ChamberCorridor, AbsorberRoom, PowerRoom, LocalRoom, RightWing, LeftWing, SpaceshipInterior, SpaceshipExterior}
+    [Header("If Door")]
     [SerializeField] SceneChoice sceneChoice;
+    public int doorIndex;
+    public bool isLocked;
+
+    //spaceship manager stat
+    public GameObject spaceshipManagerStat;
+    public SpaceshipManagerStat spaceshipManagerStatScript;
 
     // Start is called before the first frame update
     void Start()
     {
         canInteract = false;
         uIscript = GameObject.Find("Canvas").GetComponent<UIscript>();
+
+        //spaceshipManagerStat
+        spaceshipManagerStat = GameObject.Find("SpaceshipManagerStat");
+        spaceshipManagerStatScript = spaceshipManagerStat.GetComponent<SpaceshipManagerStat>();
+
+        //IndexSystem
+        if (sceneChoice == SceneChoice.SampleScene)
+        {
+            doorIndex = 0;
+        }
+        if (sceneChoice == SceneChoice.SpaceshipInterior)
+        {
+            doorIndex = 1;
+        }
+        if (sceneChoice == SceneChoice.AbsorberRoom)
+        {
+            doorIndex = 2;
+        }
+
+        
     }
 
     // Update is called once per frame
     private void Update()
     {
-        ObjectInteracted(objectType);
+        ObjectInteracted(objectType, sceneChoice);
+
+        //if list doorsopen contain the index of this door, this door is not locked anymore 
+        if (spaceshipManagerStatScript.doorsOpen.Contains(doorIndex))
+        {
+            isLocked = false;
+        }
+        else
+        {
+            isLocked = true;
+        }
     }
 
     //Enter range of interactible object
@@ -51,10 +86,11 @@ public class InteractScript : MonoBehaviour
     }
 
     //Action when interact for the Object that have been selected from the EnumList ObjectType
-    private void ObjectInteracted(ObjectType objectSelected)
+    private void ObjectInteracted(ObjectType objectSelected, SceneChoice sceneSelected)
     {
         if (canInteract == true && Input.GetKeyDown("e"))
         {
+            
             if (objectSelected == ObjectType.Computer)
             {
                 SceneManager.LoadScene("ComputerScreen");
@@ -69,8 +105,17 @@ public class InteractScript : MonoBehaviour
             }
             if (objectSelected == ObjectType.door)
             {
-                SceneManager.LoadScene(sceneChoice.ToString());
+                //LockedSystem
+                if (!isLocked)
+                {
+                    SceneManager.LoadScene(sceneChoice.ToString());
+                }
+                else
+                {
+                    Debug.Log("The Room is Locked");
+                }
             }
+            
         }
     }
 }

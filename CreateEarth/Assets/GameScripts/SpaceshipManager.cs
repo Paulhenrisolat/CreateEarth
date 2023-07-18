@@ -4,39 +4,30 @@ using UnityEngine;
 
 public class SpaceshipManager : MonoBehaviour
 {
-    //earth elements
-    //public GameObject earthtest;
-    //public GameObject earthLavaCore;
-
+    //earthLayers in scene
     private DissolveScript dissolveScript;
     private GameObject earthElement;
     public List<GameObject> earthElements;
 
     //earth manager
     public GameObject earthManager;
+    public EarthManager earthManagerScript;
     public List<EarthLayer> earthLayers;
     public List<EarthLayer> createdLayers;
 
     private bool layerIsCreated;
-    //create state
-    private bool elementIsCreating;
-    //private bool elementCreated;
     private bool elementIsDestroying;
 
     // Start is called before the first frame update
     void Start()
     {
         earthManager = GameObject.Find("EarthManager");
-        earthLayers = earthManager.GetComponent<EarthManager>().earthLayers;
-        createdLayers = earthManager.GetComponent<EarthManager>().createdLayers;
-
-        //earthtest = GameObject.Find("EarthTest");
-        //earthLavaCore = GameObject.Find("EarthLavaCore");
+        earthManagerScript = earthManager.GetComponent<EarthManager>();
+        earthLayers = earthManagerScript.earthLayers;
+        createdLayers = earthManagerScript.createdLayers;
 
         layerIsCreated = false;
 
-        //elementIsCreating = false;
-        //elementCreated = false;
         elementIsDestroying = false;
 
         foreach (EarthLayer earthLayer in earthLayers)
@@ -103,7 +94,7 @@ public class SpaceshipManager : MonoBehaviour
 
             if (dissolveScript.dissolveAmount >= 1)
             {
-                ComputerToSpaceShip.earthAlreadyCreated = false;
+                
             }
         }
     }
@@ -123,6 +114,8 @@ public class SpaceshipManager : MonoBehaviour
                     earthLayer.isCreated = true;
                     earthManager.GetComponent<EarthManager>().AddCreatedLayer(earthLayer);
 
+                    earthManagerScript.earthMaxHP += 10;
+                    earthManagerScript.earthHP += 10;
                     layerIsCreated = false;
                     earthLayer.isActive = false;
                 }
